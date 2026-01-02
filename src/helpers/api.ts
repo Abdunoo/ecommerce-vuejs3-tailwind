@@ -1,6 +1,6 @@
 // api = 
-// export const apiUrl = 'https://sandbox2.panemu.com/assessment/api/';
-export const apiUrl = 'http://localhost:8000/assessment/api/';
+export const apiUrl = 'https://sandbox2.panemu.com/assessment/api/';
+// export const apiUrl = 'http://localhost:8000/assessment/api/';
 export const unique_key = 'H8m4z/'; 
 
 import axios, { AxiosRequestConfig } from 'axios';

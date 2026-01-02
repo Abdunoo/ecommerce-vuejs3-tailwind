@@ -93,7 +93,7 @@ export default {
                url: `product/${id}`,
                method: 'GET'
             })
-            if (response.code == '200') {
+            if (response.code == 200) {
                this.product = response.data;
             }            
          } catch (error) {
@@ -111,7 +111,7 @@ export default {
                method: 'POST',
                data: params
             })
-            if (response.code == '200') {
+            if (response.code == 200) {
                this.$toast.success('Produk berhasil ditambahkan ke keranjang');
             }            
          } catch (error) {

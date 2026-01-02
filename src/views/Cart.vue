@@ -33,7 +33,7 @@
                   </div>
                   <div class="items-center w-full rounded-lg">
                      <div class="flex p-2 space-x-4 bg-white rounded-lg">
-                        <img :src="cart.product.image_url" class="w-1/3 py-2 bg-gray-300 rounded-xl h-1/3" alt="" />
+                        <img :src="getImage(cart.product.id)" class="w-1/3 py-2 bg-gray-300 rounded-xl h-1/3" alt="" />
                         <div class="flex flex-col justify-center">
                            <p class="text-base font-medium text-gray-500">
                               {{ cart.product.title }}
@@ -101,81 +101,92 @@
 </template>
 
 <script>
-import { makeRequest } from "@/helpers/api";
+import { apiUrl, makeRequest, unique_key } from "@/helpers/api";
+import { onMounted, ref } from "vue";
+import { useToast } from "vue-toast-notification";
 
 export default {
-   name: "Cart",
-   data() {
-      return {
-         lstCart: [],
-         selected: {}
-      };
-   },
-   methods: {
-      async getCartData() {
-         try {
-            let response = await makeRequest({
-               url: `cart`,
-               method: 'GET'
-            })
-            if (response.code == '200') {
-               this.lstCart = response.data;
-            }            
-         } catch (error) {
-            this.$toast.error('Error = '+ error);
+   name: 'Cart',
+   setup() {
+     const lstCart = ref([]);
+     const selected = ref({});
+     const toast = useToast();
+ 
+     const getCartData = async () => {
+       try {
+         const response = await makeRequest({
+           url: 'cart',
+           method: 'GET',
+         });
+         if (response.code === 200) {
+           lstCart.value = response.data;
          }
-      },
-      plus(id) {
-         this.selected = this.lstCart.find(p => p.id == id)
-         this.selected.qty++
-         setTimeout(() => {
-            this.updateCartData(this.selected)   
-         }, 500);
-      },
-      minus(id) {
-         this.selected = this.lstCart.find(p => p.id == id)
-         this.selected.qty--
-         setTimeout(() => {
-            this.updateCartData(this.selected)   
-         }, 500);
-         
-      },
-      async updateCartData(selected) {
-         try {
-            let response = await makeRequest({
-               url: `cart/${selected.id}`,
-               method: 'POST',
-               data: selected
-            })
-            if (response.code == '200') {
-               this.$toast.success('Berhasil update keranjang')
-            }            
-         } catch (error) {
-            this.$toast.error('Error = '+ error);
+       } catch (error) {
+         console.error('Error:', error);
+       }
+     };
+ 
+     const plus = (id) => {
+       selected.value = lstCart.value.find((p) => p.id === id);
+       selected.value.qty++;
+       setTimeout(() => updateCartData(selected.value), 500);
+     };
+ 
+     const minus = (id) => {
+       selected.value = lstCart.value.find((p) => p.id === id);
+       selected.value.qty--;
+       setTimeout(() => updateCartData(selected.value), 500);
+     };
+ 
+     const updateCartData = async (selected) => {
+       try {
+         const response = await makeRequest({
+           url: `cart/${selected.id}`,
+           method: 'POST',
+           data: selected,
+         });
+         if (response.code === 200) {
+           console.log('Berhasil update keranjang');
+           toast.success('Berhasil update keranjang',);
          }
-         setTimeout(() => {
-            this.getCartData()
-         }, 500);
-      },
-      async remove(id) {
-         try {
-            let response = await makeRequest({
-               url: `cart/${id}`,
-               method: 'DELETE'
-            })
-            if (response.code == '200') {
-               this.$toast.success('Berhasil hapus keranjang')
-            }            
-         } catch (error) {
-            this.$toast.error('Error = '+ error);
+       } catch (error) {
+         console.error('Error:', error);
+       }
+       setTimeout(() => getCartData(), 500);
+     };
+ 
+     const remove = async (id) => {
+       try {
+         const response = await makeRequest({
+           url: `cart/${id}`,
+           method: 'DELETE',
+         });
+         if (response.code === 200) {
+           console.log('Berhasil hapus keranjang');
+           toast.success('Berhasil hapus keranjang',);
+
          }
-         setTimeout(() => {
-            this.getCartData()
-         }, 500);
-      }
+       } catch (error) {
+         console.error('Error:', error);
+       }
+       setTimeout(() => getCartData(), 500);
+     };
+ 
+     const getImage = (id) => {
+       return `${apiUrl}${unique_key}show/${id}`;
+     };
+ 
+     onMounted(() => {
+       getCartData();
+     });
+ 
+     return {
+       lstCart,
+       plus,
+       minus,
+       remove,
+       getImage,
+     };
    },
-   mounted() {
-      this.getCartData()
-   },
-};
+ };
 </script>

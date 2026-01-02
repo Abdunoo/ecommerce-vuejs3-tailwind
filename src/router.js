@@ -16,18 +16,28 @@ const routes = [
   { path: '/product/:id', component: DetailProduct },
   {path:'/cart', component: Cart},
   {path:'/admin', component: Admin, meta: { requiresAuth: true }},
-  {path:'/login', component: Login}
+  {path:'/login', component: Login},
+  {
+	path: '/ticketing',
+	beforeEnter() {
+	  window.location.href = 'https://sandbox2.panemu.com/ticketing/index.html';
+	}
+  }
+  
 ]
 
 const router = createRouter({
-	history: createWebHistory(),
-	base: '',
-	routes,
+	history: createWebHistory(''),
+	routes, // Your defined routes go here
 	scrollBehavior(to, from, savedPosition) {
-	  // always scroll to top
-	  return { top: 0 }
+	  // Scroll to the saved position if it exists, otherwise scroll to the top
+	  if (savedPosition) {
+		return savedPosition;
+	  } else {
+		return { top: 0 };
+	  }
 	},
-});
+  });  
 
 // router.beforeEach((to, from, next) => {
 // 	if (to.meta.requiresAuth) {

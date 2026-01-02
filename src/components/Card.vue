@@ -50,13 +50,12 @@ export default {
                method: 'POST',
                data: params
             });
-            if (response.code === '200') {
+            if (response.code === 200) {
                toast.success('Produk berhasil ditambahkan ke keranjang');
-            } else {
-               toast.error('Failed to add product to cart');
             }
          } catch (error) {
-            toast.error(`Error: ${error}`);
+            toast.error('Failed to add product to cart');
+            console.log(error);
          }
       }, 300); // Debounce to prevent multiple rapid clicks
 

@@ -121,7 +121,7 @@ export default {
                url: `product/${productId}`,
                method: 'DELETE'
             })  
-            if (response.code == '200') {
+            if (response.code == 200) {
                this.$toast.success('Produk berhasil dihapus') 
             }
          } catch (error) {
